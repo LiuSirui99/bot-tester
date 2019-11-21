@@ -36,7 +36,7 @@ def receive_message():
                     recipient_id = message['sender']['id']
                     if 'text' in message['message']:
                         msg = message['message']['text']
-                        response = 'Sorry didn\'t understand that :( \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'
+                        response = 'We are happy to have you here:) \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'
                         if 'Hello' in msg:
                             response = 'Hey, let\'s get started! Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'''
                         if 'Selfie' in msg:
