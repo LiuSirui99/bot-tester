@@ -34,126 +34,42 @@ def get_element(btn):
         buttons=[btn]
     )
 
-# uses PyMessenger to send response to user
-def send_message(recipient_id, response):
-    #sends user the text message provided via input response parameter
-    bot.send_text_message(recipient_id, response)
-    return "success"
+def receive_message():
+    output = request.get_json()
+    for event in output['entry']:
+        messaging = event['messaging']
+        for message in messaging:
+            if message.get('message'):
+            #Facebook Messenger ID for user so we know where to send response back to
+                recipient_id = message['sender']['id']
+                if message['message'].get('text'):
+                    msg = message['message']['text'].lower()
+                    response = Text(text='Sorry didn\'t understand that: {}'.format(msg))
+                    if 'text' in msg:
+                        response = Text(text='This is an example text message.')
+                    if 'image' in msg:
+                        response = Image(url='https://unsplash.it/300/200/?random')
+                    if 'video' in msg:
+                        response = Video(url='http://techslides.com/demos/sample-videos/small.mp4')
+                    return response.to_dict()
+                #if user sends us a GIF, photo,video, or any other non-text item
+                if message['message'].get('attachments'):
+                    if message['message']['attachments'][0]['type'] == 'location':
+                        app.logger.debug('Location received')
+                        response = Text(text='{}: lat: {}, long: {}'.format(
+                        message['message']['attachments'][0]['title'],
+                        message['message']['attachments'][0]['payload']['coordinates']['lat'],
+                        message['message']['attachments'][0]['payload']['coordinates']['long']
+                        ))
+                        return response.to_dict()
 
-
-
-def process_message(message):
-    app.logger.debug('Message received: {}'.format(message))
-
-    if 'attachments' in message['message']:
-        if message['message']['attachments'][0]['type'] == 'location':
-            app.logger.debug('Location received')
-            response = Text(text='{}: lat: {}, long: {}'.format(
-                message['message']['attachments'][0]['title'],
-                message['message']['attachments'][0]['payload']['coordinates']['lat'],
-                message['message']['attachments'][0]['payload']['coordinates']['long']
-            ))
-            return response.to_dict()
-
-    if 'text' in message['message']:
-        msg = message['message']['text'].lower()
-        response = Text(text='Sorry didn\'t understand that: {}'.format(msg))
-        if 'text' in msg:
-            response = Text(text='This is an example text message.')
-        if 'image' in msg:
-            response = Image(url='https://unsplash.it/300/200/?random')
-        if 'video' in msg:
-            response = Video(url='http://techslides.com/demos/sample-videos/small.mp4')
-        if 'quick replies' in msg:
-            qr1 = quick_replies.QuickReply(title='Location', content_type='location')
-            qr2 = quick_replies.QuickReply(title='Payload', payload='QUICK_REPLY_PAYLOAD')
-            qrs = quick_replies.QuickReplies(quick_replies=[qr1, qr2])
-            response = Text(text='This is an example text message.', quick_replies=qrs)
-        if 'payload' in msg:
-            txt = 'User clicked {}, button payload is {}'.format(
-                msg,
-                message['message']['quick_reply']['payload']
-            )
-            response = Text(text=txt)
-        if 'webview-compact' in msg:
-            btn = get_button(ratio='compact')
-            elem = get_element(btn)
-            response = GenericTemplate(elements=[elem])
-        if 'webview-tall' in msg:
-            btn = get_button(ratio='tall')
-            elem = get_element(btn)
-            response = GenericTemplate(elements=[elem])
-        if 'webview-full' in msg:
-            btn = get_button(ratio='full')
-            elem = get_element(btn)
-            response = GenericTemplate(elements=[elem])
-
-        return response.to_dict()
-
-
-class Messenger(BaseMessenger):
-    def __init__(self, page_access_token):
-        self.page_access_token = page_access_token
-        super(Messenger, self).__init__(self.page_access_token)
-
-    def message(self, message):
-        action = process_message(message)
-        res = self.send(action, 'RESPONSE')
-        app.logger.debug('Response: {}'.format(res))
-
-    def delivery(self, message):
-        pass
-
-    def read(self, message):
-        pass
-
-    def account_linking(self, message):
-        pass
-
-    def postback(self, message):
-        payload = message['postback']['payload']
-        if 'start' in payload:
-            txt = ('Hey, let\'s get started! Try sending me one of these messages: '
-                   'text, image, video, "quick replies", '
-                   'webview-compact, webview-tall, webview-full')
-            self.send({'text': txt}, 'RESPONSE')
-        if 'help' in payload:
-            self.send({'text': 'A help message or template can go here.'}, 'RESPONSE')
-
-    def optin(self, message):
-        pass
-
-    def init_bot(self):
-        self.add_whitelisted_domains('https://facebook.com/')
-        greeting = GreetingText(text='Welcome to the fbmessenger bot demo.')
-        self.set_messenger_profile(greeting.to_dict())
-
-        get_started = GetStartedButton(payload='start')
-        self.set_messenger_profile(get_started.to_dict())
-
-        menu_item_1 = PersistentMenuItem(
-            item_type='postback',
-            title='Help',
-            payload='help',
-        )
-        menu_item_2 = PersistentMenuItem(
-            item_type='web_url',
-            title='Messenger Docs',
-            url='https://developers.facebook.com/docs/messenger-platform',
-        )
-        persistent_menu = PersistentMenu(menu_items=[
-            menu_item_1,
-            menu_item_2
-        ])
-
-        res = self.set_messenger_profile(persistent_menu.to_dict())
-        app.logger.debug('Response: {}'.format(res))
+    return "Message Processed"
 
 
 app = Flask(__name__)
 app.debug = True
-messenger = Messenger(FB_PAGE_TOKEN)
-# bot = Bot(FB_PAGE_TOKEN)
+# messenger = Messenger(FB_PAGE_TOKEN)
+bot = Bot(FB_PAGE_TOKEN)
 @app.route("/", methods=['GET', 'POST'])
 # @app.route('/webhook', methods=['GET', 'POST'])
 def verify_fb_token():
