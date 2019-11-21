@@ -47,11 +47,13 @@ def receive_message():
                     response = Text(text='Sorry didn\'t understand that: {}'.format(msg))
                     if 'text' in msg:
                         response = Text(text='This is an example text message.')
+                        send_message(recipient_id, response)
                     if 'image' in msg:
                         response = Image(url='https://unsplash.it/300/200/?random')
+                        send_message(recipient_id, response)
                     if 'video' in msg:
                         response = Video(url='http://techslides.com/demos/sample-videos/small.mp4')
-                    return response.to_dict()
+                        send_message(recipient_id, response)
                 #if user sends us a GIF, photo,video, or any other non-text item
                 if message['message'].get('attachments'):
                     if message['message']['attachments'][0]['type'] == 'location':
@@ -65,6 +67,42 @@ def receive_message():
 
     return "Message Processed"
 
+# def process_message(message):
+#     app.logger.debug('Message received: {}'.format(message))
+#
+#     if 'attachments' in message['message']:
+#
+#
+#     if 'text' in message['message']:
+#         msg = message['message']['text'].lower()
+#         response = Text(text='Sorry didn\'t understand that: {}'.format(msg))
+#
+#         if 'quick replies' in msg:
+#             qr1 = quick_replies.QuickReply(title='Location', content_type='location')
+#             qr2 = quick_replies.QuickReply(title='Payload', payload='QUICK_REPLY_PAYLOAD')
+#             qrs = quick_replies.QuickReplies(quick_replies=[qr1, qr2])
+#             response = Text(text='This is an example text message.', quick_replies=qrs)
+#         if 'payload' in msg:
+#             txt = 'User clicked {}, button payload is {}'.format(
+#                 msg,
+#                 message['message']['quick_reply']['payload']
+#             )
+#             response = Text(text=txt)
+#         if 'webview-compact' in msg:
+#             btn = get_button(ratio='compact')
+#             elem = get_element(btn)
+#             response = GenericTemplate(elements=[elem])
+#         if 'webview-tall' in msg:
+#             btn = get_button(ratio='tall')
+#             elem = get_element(btn)
+#             response = GenericTemplate(elements=[elem])
+#         if 'webview-full' in msg:
+#             btn = get_button(ratio='full')
+#             elem = get_element(btn)
+#             response = GenericTemplate(elements=[elem])
+#
+#         return response.to_dict()
+
 
 app = Flask(__name__)
 app.debug = True
@@ -77,7 +115,11 @@ def verify_fb_token():
         return request.args.get('hub.challenge')
     return 'Invalid verification token'
 
-
+#uses PyMessenger to send response to user
+def send_message(recipient_id, response):
+    #sends user the text message provided via input response parameter
+    bot.send_text_message(recipient_id, response)
+    return "success"
 
 if __name__ == '__main__':
     app.run()
