@@ -34,7 +34,6 @@ def receive_message():
                 if message.get('message'):
                     #Facebook Messenger ID for user so we know where to send response back to
                     recipient_id = message['sender']['id']
-                    send_get_started(bot,recipient_id)
                     if 'text' in message['message']:
                         msg = message['message']['text'].lower()
                         response = 'Sorry didn\'t understand that :('
@@ -44,7 +43,8 @@ def receive_message():
                             response = 'Please send us your recent clear identification document for authentication.'
                         send_message(recipient_id, response)
                     #if user sends us a GIF, photo,video, or any other non-text item
-                    if message['message'].get('attachments'):
+                    if 'text' in message['message']:
+
                         response_sent_nontext = get_message()
                         send_message(recipient_id, response_sent_nontext)
     return "Message Processed"
