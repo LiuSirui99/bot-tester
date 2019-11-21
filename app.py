@@ -44,9 +44,8 @@ def receive_message():
                         send_message(recipient_id, response)
                     #if user sends us a GIF, photo,video, or any other non-text item
                     if 'attachments' in message['message']:
-                        if message['message']['attachments'][0]['type'] == 'selfie':
-                            response_sent_nontext = 'Picture well received, thank you :)'
-                            send_message(recipient_id, response_sent_nontext)
+                        response_sent_nontext = 'Picture well received, thank you :)' + get_message()
+                        send_message(recipient_id, response_sent_nontext)
     return "Message Processed"
 
 
