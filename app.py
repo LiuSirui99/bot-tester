@@ -36,14 +36,19 @@ def receive_message():
                     recipient_id = message['sender']['id']
                     if 'text' in message['message']:
                         msg = message['message']['text']
-                        response = 'We are happy to have you here:) \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'
+                        response = 'We are happy to have you here:) \n \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'
                         if 'Hello' in msg:
-                            response = 'Hey, let\'s get started! Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'''
-                        if 'Selfie' in msg:
+                            response = 'Hey, We are happy to have you here:) \n \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'''
+                        if 'Selfie' | 'selfie' in msg:
                             response = 'Please send us your recent clear selfie for authentication.'
                         if 'Upload id' in msg:
                             response = 'Please send us your recent clear identification document for authentication.'
+                        if 'Chat' in msg:
+                            response = get_message()
+                        if 'Rating' in msg:
+                            response = 'Please rate us from 1-5. \n We are always working on the best service :)'
                         send_message(recipient_id, response)
+
                     #if user sends us a GIF, photo,video, or any other non-text item
                     if 'attachments' in message['message']:
                         response_sent_nontext = 'Picture well received, thank you :)' + get_message()
