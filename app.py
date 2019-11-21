@@ -1,22 +1,13 @@
-import json
+#Python libraries that we need to import for our bot
 import os
-
-import requests
-from pymessenger.bot import Bot
+import random
 from flask import Flask, request
-from fbmessenger.elements import Text, Button, Element
-
-FB_PAGE_TOKEN = 'EAAhBgAvgBxgBAOMZB8zBAyaAHGLTusOH1yILf3ZCYq3Cykuzh4GlxZCQR9LonOh2qfmSUp2aBfBhZCalH14k5kifzUq7ItFI7seiNUu6irZCgZBhx6XqQtXIH1Op8CHYZBaPpZB3yedZA3VlqEZBzMe6YwZAMNN1PUrZAghhorTs5wtqVAZDZD'
-FB_VERIFY_TOKEN = 'test_token'
-bot = Bot(FB_PAGE_TOKEN)
-def get_button(ratio):
-    return Button(
-        button_type='web_url',
-        title='facebook {}'.format(ratio),
-        url='https://facebook.com/',
-        webview_height_ratio=ratio,
-    )
-
+from pymessenger.bot import Bot
+import os
+app = Flask(__name__)
+ACCESS_TOKEN = 'EAAhBgAvgBxgBAOMZB8zBAyaAHGLTusOH1yILf3ZCYq3Cykuzh4GlxZCQR9LonOh2qfmSUp2aBfBhZCalH14k5kifzUq7ItFI7seiNUu6irZCgZBhx6XqQtXIH1Op8CHYZBaPpZB3yedZA3VlqEZBzMe6YwZAMNN1PUrZAghhorTs5wtqVAZDZD'
+VERIFY_TOKEN = 'test_token'
+bot = Bot (ACCESS_TOKEN)
 
 def send_get_started(bot,recipient_id):
     button = {
@@ -25,82 +16,53 @@ def send_get_started(bot,recipient_id):
         }
     }
 
-def get_element(btn):
-    return Element(
-        title='Testing template',
-        item_url='http://facebook.com',
-        image_url='http://placehold.it/300x300',
-        subtitle='Subtitle',
-        buttons=[btn]
-    )
-
+#We will receive messages that Facebook sends our bot at this endpoint
+@app.route("/", methods=['GET', 'POST'])
 def receive_message():
-    output = request.get_json()
-    for event in output['entry']:
-        messaging = event['messaging']
-        for message in messaging:
-            if message.get('message'):
-            #Facebook Messenger ID for user so we know where to send response back to
-                recipient_id = message['sender']['id']
-                send_get_started(bot,recipient_id)
-                if 'text' in message['message']:
-                    response = Text(text='This is an example text message.')
-                    send_message(recipient_id, response)
-                    # if 'image' in msg:
-                    #     response = Image(url='https://unsplash.it/300/200/?random')
-                    #     send_message(recipient_id, response)
-                    # if 'video' in msg:
-                    #     response = Video(url='http://techslides.com/demos/sample-videos/small.mp4')
-                    #     send_message(recipient_id, response)
+    if request.method == 'GET':
+        """Before allowing people to message your bot, Facebook has implemented a verify token
+        that confirms all requests that your bot receives came from Facebook."""
+        token_sent = request.args.get("hub.verify_token")
+        return verify_fb_token(token_sent)
+    #if the request was not get, it must be POST and we can just proceed with sending a message back to user
+    else:
+        # get whatever message a user sent the bot
+        output = request.get_json()
+        for event in output['entry']:
+            messaging = event['messaging']
+            for message in messaging:
+                if message.get('message'):
+                    #Facebook Messenger ID for user so we know where to send response back to
+                    recipient_id = message['sender']['id']
+                    send_get_started(bot,recipient_id)
+                    if 'text' in message['message']:
+                        msg = message['message']['text'].lower()
+                        response = 'Sorry didn\'t understand that :('
+                        if 'Selfie' in msg:
+                            response = 'Please send us your recent clear selfie for authentication.'
+                        if 'identification card' in msg:
+                            response = 'Please send us your recent clear identification document for authentication.'
+                        send_message(recipient_id, response)
+                    #if user sends us a GIF, photo,video, or any other non-text item
+                    if message['message'].get('attachments'):
+                        response_sent_nontext = get_message()
+                        send_message(recipient_id, response_sent_nontext)
     return "Message Processed"
 
-# def process_message(message):
-#     app.logger.debug('Message received: {}'.format(message))
-#
-#     if 'attachments' in message['message']:
-#
-#
-#     if 'text' in message['message']:
-#         msg = message['message']['text'].lower()
-#         response = Text(text='Sorry didn\'t understand that: {}'.format(msg))
-#
-#         if 'quick replies' in msg:
-#             qr1 = quick_replies.QuickReply(title='Location', content_type='location')
-#             qr2 = quick_replies.QuickReply(title='Payload', payload='QUICK_REPLY_PAYLOAD')
-#             qrs = quick_replies.QuickReplies(quick_replies=[qr1, qr2])
-#             response = Text(text='This is an example text message.', quick_replies=qrs)
-#         if 'payload' in msg:
-#             txt = 'User clicked {}, button payload is {}'.format(
-#                 msg,
-#                 message['message']['quick_reply']['payload']
-#             )
-#             response = Text(text=txt)
-#         if 'webview-compact' in msg:
-#             btn = get_button(ratio='compact')
-#             elem = get_element(btn)
-#             response = GenericTemplate(elements=[elem])
-#         if 'webview-tall' in msg:
-#             btn = get_button(ratio='tall')
-#             elem = get_element(btn)
-#             response = GenericTemplate(elements=[elem])
-#         if 'webview-full' in msg:
-#             btn = get_button(ratio='full')
-#             elem = get_element(btn)
-#             response = GenericTemplate(elements=[elem])
-#
-#         return response.to_dict()
 
-
-app = Flask(__name__)
-app.debug = True
-# messenger = Messenger(FB_PAGE_TOKEN)
-
-@app.route("/", methods=['GET', 'POST'])
-# @app.route('/webhook', methods=['GET', 'POST'])
-def verify_fb_token():
-    if request.args.get('hub.verify_token') == FB_VERIFY_TOKEN:
-        return request.args.get('hub.challenge')
+def verify_fb_token(token_sent):
+    #take token sent by facebook and verify it matches the verify token you sent
+    #if they match, allow the request, else return an error
+    if token_sent == VERIFY_TOKEN:
+        return request.args.get("hub.challenge")
     return 'Invalid verification token'
+
+
+#chooses a random message to send to the user
+def get_message():
+    sample_responses = ["You are stunning!", "We're proud of you.", "Keep on being you!", "We're greatful to know you :)"]
+    # return selected item to the user
+    return random.choice(sample_responses)
 
 #uses PyMessenger to send response to user
 def send_message(recipient_id, response):
@@ -108,5 +70,5 @@ def send_message(recipient_id, response):
     bot.send_text_message(recipient_id, response)
     return "success"
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
