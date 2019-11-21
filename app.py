@@ -45,6 +45,7 @@ def receive_message():
                 if message['message'].get('text'):
                     msg = message['message']['text'].lower()
                     response = Text(text='Sorry didn\'t understand that: {}'.format(msg))
+                    send_message(recipient_id, response)
                     if 'text' in msg:
                         response = Text(text='This is an example text message.')
                         send_message(recipient_id, response)
