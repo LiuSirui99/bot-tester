@@ -46,11 +46,11 @@ def receive_message():
                         if 'Upload id' in msg:
                             response = 'Please send us your recent clear identification document for authentication.'
                         if 'upload' in msg:
-                            response = 'Do you mean uploading \b selfie or identification card for authentification process?\n  \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating '
+                            response = 'Do you mean uploading selfie or identification card for authentification process?\n  \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating '
                         if 'Chat' in msg:
                             response = get_message()
                         if 'Rating' in msg:
-                            response = 'Please rate us from 1-5. \n We are always working on the best service :)'
+                            response = 'Please rate us from 1-5. \n \n  We are always working on the best service :)'
                         send_message(recipient_id, response)
 
                     #if user sends us a GIF, photo,video, or any other non-text item
