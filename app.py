@@ -1,6 +1,5 @@
-#Python libraries that we need to import for our bot
 import os
-import random
+
 from flask import Flask, request
 from fbmessenger import BaseMessenger
 from fbmessenger.templates import GenericTemplate
@@ -14,19 +13,7 @@ from fbmessenger.thread_settings import (
     PersistentMenu,
     MessengerProfile,
 )
-from pymessenger.bot import Bot
-import os
 
-def get_button(ratio):
-return Button(
-    button_type='web_url',
-    title='facebook {}'.format(ratio),
-    url='https://facebook.com/',
-    webview_height_ratio=ratio,
-)
-
-
-app = Flask(__name__)
 FB_PAGE_TOKEN = 'EAAhBgAvgBxgBAOMZB8zBAyaAHGLTusOH1yILf3ZCYq3Cykuzh4GlxZCQR9LonOh2qfmSUp2aBfBhZCalH14k5kifzUq7ItFI7seiNUu6irZCgZBhx6XqQtXIH1Op8CHYZBaPpZB3yedZA3VlqEZBzMe6YwZAMNN1PUrZAghhorTs5wtqVAZDZD'
 FB_VERIFY_TOKEN = 'test_token'
 
