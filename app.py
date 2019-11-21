@@ -27,9 +27,16 @@ def receive_message():
                 if message.get('message'):
                     #Facebook Messenger ID for user so we know where to send response back to
                     recipient_id = message['sender']['id']
-                    if message['message'].get('text'):
-                        response_sent_text = 'This is an example text message.'
-                        send_message(recipient_id, response_sent_text)
+                    # if message['message'].get('text'):
+                    if 'text' in message['message']:
+                        msg = message['message']['text'].lower()
+                        response = 'Sorry didn\'t understand that :('
+                        response_sent_text = 'Hey there.'
+                        if 'image' in msg:
+                            response = 'https://unsplash.it/300/200/?random'
+                        if 'video' in msg:
+                            response = 'http://techslides.com/demos/sample-videos/small.mp4'
+                        send_message(recipient_id, response)
                     #if user sends us a GIF, photo,video, or any other non-text item
                     if message['message'].get('attachments'):
                         response_sent_nontext = get_message()
