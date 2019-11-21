@@ -148,8 +148,8 @@ app.debug = True
 bot = Bot(FB_PAGE_TOKEN)
 @app.route("/", methods=['GET', 'POST'])
 # @app.route('/webhook', methods=['GET', 'POST'])
-def verify_fb_token(token_sent):
-    if token_sent == FB_VERIFY_TOKEN:
+def verify_fb_token():
+    if request.args.get('hub.verify_token') == FB_VERIFY_TOKEN:
         return request.args.get('hub.challenge')
     return 'Invalid verification token'
 
