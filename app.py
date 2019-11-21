@@ -37,16 +37,16 @@ def receive_message():
                     if 'text' in message['message']:
                         msg = message['message']['text'].lower()
                         response = 'Sorry didn\'t understand that :('
-                        if 'Selfie' in msg:
+                        if 'selfie' in msg:
                             response = 'Please send us your recent clear selfie for authentication.'
                         if 'identification card' in msg:
                             response = 'Please send us your recent clear identification document for authentication.'
                         send_message(recipient_id, response)
                     #if user sends us a GIF, photo,video, or any other non-text item
-                    if 'text' in message['message']:
-
-                        response_sent_nontext = get_message()
-                        send_message(recipient_id, response_sent_nontext)
+                    if 'attachments' in message['message']:
+                        if message['message']['attachments'][0]['type'] == 'selfie':
+                            response_sent_nontext = 'Picture well received, thank you :)'
+                            send_message(recipient_id, response_sent_nontext)
     return "Message Processed"
 
 
