@@ -36,10 +36,12 @@ def receive_message():
                     recipient_id = message['sender']['id']
                     if 'text' in message['message']:
                         msg = message['message']['text'].lower()
-                        response = 'Sorry didn\'t understand that :('
+                        response = 'Sorry didn\'t understand that :( \n Try sending me one of these messages: ''chat, selfie, upload id, rating'
+                        if 'Hello' in msg:
+                            response = 'Hey, let\'s get started! Try sending me one of these messages: ''chat, selfie, upload id, rating'''
                         if 'selfie' in msg:
                             response = 'Please send us your recent clear selfie for authentication.'
-                        if 'identification card' in msg:
+                        if 'upload id' in msg:
                             response = 'Please send us your recent clear identification document for authentication.'
                         send_message(recipient_id, response)
                     #if user sends us a GIF, photo,video, or any other non-text item
