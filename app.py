@@ -39,10 +39,14 @@ def receive_message():
                         response = 'We are happy to have you here:) \n \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'
                         if 'Hello' in msg:
                             response = 'Hey, We are happy to have you here:) \n \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'''
-                        if 'Selfie' | 'selfie' in msg:
+                        if 'Selfie' in msg:
+                            response = 'Please send us your recent clear selfie for authentication.'
+                        if 'selfie' in msg:
                             response = 'Please send us your recent clear selfie for authentication.'
                         if 'Upload id' in msg:
                             response = 'Please send us your recent clear identification document for authentication.'
+                        if 'upload' in msg:
+                            response = 'Do you mean uploading \b selfie or identification card for authentification process?\n  \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating '
                         if 'Chat' in msg:
                             response = get_message()
                         if 'Rating' in msg:
