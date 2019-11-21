@@ -43,29 +43,14 @@ def receive_message():
             #Facebook Messenger ID for user so we know where to send response back to
                 recipient_id = message['sender']['id']
                 if 'text' in message['message']:
-                    msg = message['message']['text'].lower()
-                    response = Text(text='Sorry didn\'t understand that: {}'.format(msg))
+                    response = Text(text='This is an example text message.')
                     send_message(recipient_id, response)
-                    if 'text' in msg:
-                        response = Text(text='This is an example text message.')
-                        send_message(recipient_id, response)
-                    if 'image' in msg:
-                        response = Image(url='https://unsplash.it/300/200/?random')
-                        send_message(recipient_id, response)
-                    if 'video' in msg:
-                        response = Video(url='http://techslides.com/demos/sample-videos/small.mp4')
-                        send_message(recipient_id, response)
-                #if user sends us a GIF, photo,video, or any other non-text item
-            if 'attachments' in message['message']:
-                    if message['message']['attachments'][0]['type'] == 'location':
-                        app.logger.debug('Location received')
-                        response = Text(text='{}: lat: {}, long: {}'.format(
-                        message['message']['attachments'][0]['title'],
-                        message['message']['attachments'][0]['payload']['coordinates']['lat'],
-                        message['message']['attachments'][0]['payload']['coordinates']['long']
-                        ))
-                        return response.to_dict()
-
+                    # if 'image' in msg:
+                    #     response = Image(url='https://unsplash.it/300/200/?random')
+                    #     send_message(recipient_id, response)
+                    # if 'video' in msg:
+                    #     response = Video(url='http://techslides.com/demos/sample-videos/small.mp4')
+                    #     send_message(recipient_id, response)
     return "Message Processed"
 
 # def process_message(message):
