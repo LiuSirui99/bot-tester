@@ -42,7 +42,7 @@ def receive_message():
             if message.get('message'):
             #Facebook Messenger ID for user so we know where to send response back to
                 recipient_id = message['sender']['id']
-                if message['message'].get('text'):
+                if 'text' in message['message']:
                     msg = message['message']['text'].lower()
                     response = Text(text='Sorry didn\'t understand that: {}'.format(msg))
                     send_message(recipient_id, response)
@@ -56,7 +56,7 @@ def receive_message():
                         response = Video(url='http://techslides.com/demos/sample-videos/small.mp4')
                         send_message(recipient_id, response)
                 #if user sends us a GIF, photo,video, or any other non-text item
-                if message['message'].get('attachments'):
+            if 'attachments' in message['message']:
                     if message['message']['attachments'][0]['type'] == 'location':
                         app.logger.debug('Location received')
                         response = Text(text='{}: lat: {}, long: {}'.format(
