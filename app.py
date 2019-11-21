@@ -34,6 +34,14 @@ def get_element(btn):
         buttons=[btn]
     )
 
+# uses PyMessenger to send response to user
+def send_message(recipient_id, response):
+    #sends user the text message provided via input response parameter
+    bot.send_text_message(recipient_id, response)
+    return "success"
+
+
+
 def process_message(message):
     app.logger.debug('Message received: {}'.format(message))
 
@@ -83,69 +91,69 @@ def process_message(message):
         return response.to_dict()
 
 
-# class Messenger(BaseMessenger):
-#     def __init__(self, page_access_token):
-#         self.page_access_token = page_access_token
-#         super(Messenger, self).__init__(self.page_access_token)
-#
-#     def message(self, message):
-#         action = process_message(message)
-#         res = self.send(action, 'RESPONSE')
-#         app.logger.debug('Response: {}'.format(res))
-#
-#     def delivery(self, message):
-#         pass
-#
-#     def read(self, message):
-#         pass
-#
-#     def account_linking(self, message):
-#         pass
-#
-#     def postback(self, message):
-#         payload = message['postback']['payload']
-#         if 'start' in payload:
-#             txt = ('Hey, let\'s get started! Try sending me one of these messages: '
-#                    'text, image, video, "quick replies", '
-#                    'webview-compact, webview-tall, webview-full')
-#             self.send({'text': txt}, 'RESPONSE')
-#         if 'help' in payload:
-#             self.send({'text': 'A help message or template can go here.'}, 'RESPONSE')
-#
-#     def optin(self, message):
-#         pass
-#
-#     def init_bot(self):
-#         self.add_whitelisted_domains('https://facebook.com/')
-#         greeting = GreetingText(text='Welcome to the fbmessenger bot demo.')
-#         self.set_messenger_profile(greeting.to_dict())
-#
-#         get_started = GetStartedButton(payload='start')
-#         self.set_messenger_profile(get_started.to_dict())
-#
-#         menu_item_1 = PersistentMenuItem(
-#             item_type='postback',
-#             title='Help',
-#             payload='help',
-#         )
-#         menu_item_2 = PersistentMenuItem(
-#             item_type='web_url',
-#             title='Messenger Docs',
-#             url='https://developers.facebook.com/docs/messenger-platform',
-#         )
-#         persistent_menu = PersistentMenu(menu_items=[
-#             menu_item_1,
-#             menu_item_2
-#         ])
-#
-#         res = self.set_messenger_profile(persistent_menu.to_dict())
-#         app.logger.debug('Response: {}'.format(res))
+class Messenger(BaseMessenger):
+    def __init__(self, page_access_token):
+        self.page_access_token = page_access_token
+        super(Messenger, self).__init__(self.page_access_token)
+
+    def message(self, message):
+        action = process_message(message)
+        res = self.send(action, 'RESPONSE')
+        app.logger.debug('Response: {}'.format(res))
+
+    def delivery(self, message):
+        pass
+
+    def read(self, message):
+        pass
+
+    def account_linking(self, message):
+        pass
+
+    def postback(self, message):
+        payload = message['postback']['payload']
+        if 'start' in payload:
+            txt = ('Hey, let\'s get started! Try sending me one of these messages: '
+                   'text, image, video, "quick replies", '
+                   'webview-compact, webview-tall, webview-full')
+            self.send({'text': txt}, 'RESPONSE')
+        if 'help' in payload:
+            self.send({'text': 'A help message or template can go here.'}, 'RESPONSE')
+
+    def optin(self, message):
+        pass
+
+    def init_bot(self):
+        self.add_whitelisted_domains('https://facebook.com/')
+        greeting = GreetingText(text='Welcome to the fbmessenger bot demo.')
+        self.set_messenger_profile(greeting.to_dict())
+
+        get_started = GetStartedButton(payload='start')
+        self.set_messenger_profile(get_started.to_dict())
+
+        menu_item_1 = PersistentMenuItem(
+            item_type='postback',
+            title='Help',
+            payload='help',
+        )
+        menu_item_2 = PersistentMenuItem(
+            item_type='web_url',
+            title='Messenger Docs',
+            url='https://developers.facebook.com/docs/messenger-platform',
+        )
+        persistent_menu = PersistentMenu(menu_items=[
+            menu_item_1,
+            menu_item_2
+        ])
+
+        res = self.set_messenger_profile(persistent_menu.to_dict())
+        app.logger.debug('Response: {}'.format(res))
 
 
 app = Flask(__name__)
 app.debug = True
-# messenger = Messenger(os.environ.get('FB_PAGE_TOKEN'))
-bot = Bot(FB_PAGE_TOKEN)
+messenger = Messenger(FB_PAGE_TOKEN)
+# bot = Bot(FB_PAGE_TOKEN)
 @app.route("/", methods=['GET', 'POST'])
 # @app.route('/webhook', methods=['GET', 'POST'])
 def verify_fb_token():
