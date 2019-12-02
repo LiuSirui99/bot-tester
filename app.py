@@ -40,11 +40,11 @@ def receive_message():
                         if 'Hello' in msg:
                             response = 'Hey, We are happy to have you here:) \n \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating'''
                         if 'Selfie' in msg:
-                            response = 'Please send us your recent clear selfie for authentication here: http://127.0.0.1:5000/registerAction'
+                            response = 'Please send us your recent clear selfie for authentication here: http://127.0.0.1:5000'
                         if 'selfie' in msg:
-                            response = 'Please send us your recent clear selfie for authentication here http://127.0.0.1:5000/registerAction.'
+                            response = 'Please send us your recent clear selfie for authentication here http://127.0.0.1:5000.'
                         if 'Upload id' in msg:
-                            response = 'Please send us your recent clear identification document for authentication here http://127.0.0.1:5000/registerAction.'
+                            response = 'Please send us your recent clear identification document for authentication here http://127.0.0.1:5000.'
                         if 'upload' in msg:
                             response = 'Do you mean uploading selfie or identification card for authentification process?\n  \n Try sending me one of these messages: ''Chat, Selfie, Upload id, Rating '
                         if 'Chat' in msg:
